@@ -1,5 +1,7 @@
 import { GameModeDetector } from "./Modes/DetectMode";
 import { Classic } from "./Modes/Live/Classic";
+import { GoldQuest } from "./Modes/Live/Gold";
+import { UIBuilder } from "./UI/UIBuilder";
 
 interface ModeController {
     tick(): void;
@@ -14,9 +16,10 @@ let controller: ModeController | null = null;
 switch(mode.mode){
     case "Classic":
         controller = new Classic();
+    case "Gold":
+        controller = new GoldQuest();
 }
 
-// at some point there will be a gui to configure these things
-let tickrate = 100;
 
+let tickrate = 100;
 if(controller) setInterval( () => {controller?.tick()}, tickrate);

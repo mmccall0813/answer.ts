@@ -1,3 +1,4 @@
+import { UIBuilder } from "../../UI/UIBuilder";
 import { BaseLiveGameMode, BaseLiveGameStateNode } from "../Base";
 
 interface ClassicStateNode extends BaseLiveGameStateNode {
@@ -7,15 +8,19 @@ interface ClassicStateNode extends BaseLiveGameStateNode {
 
 export class Classic extends BaseLiveGameMode {
     readyToAnswer: boolean;
+    UI: UIBuilder;
     constructor(){
         super();
         this.readyToAnswer = false;
+
+        this.UI = new UIBuilder();
+        this.UI.addCheckbox("autoans", "Auto Answer", true);
     }
     updateBasicInfo(): void {
         super.updateBasicInfo();
         let stateNode = this.getStateNode() as ClassicStateNode;
 
-        this.readyToAnswer = (stateNode.ready === true) && (stateNode.onAnswer !== undefined)
+        this.readyToAnswer = (this.UI.checkboxRef.get("autoans")?.checked === true) && (stateNode.ready === true) && (stateNode.onAnswer !== undefined)
     }
     tick(){
         this.updateBasicInfo();

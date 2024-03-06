@@ -25,7 +25,12 @@ export function GameModeDetector(): { live: boolean, mode: string } {
     let live = false;
     let mode = "";
     let found = false;
-    let stateNode = getStateNode();
+    let stateNode;
+    try {
+        stateNode = getStateNode();
+    } catch(err){
+        return {live: false, mode: "unknown"};
+    }
 
     if(stateNode.props.client?.type && !found){
         live = true;
