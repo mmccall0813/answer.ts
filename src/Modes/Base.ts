@@ -32,8 +32,13 @@ export class BaseGameMode {
     }
     getStateNode(){
         let header = document.querySelector("#header");
-        if(!header) throw "Cannot get state node in this context!";
-        let app = header!.parentElement;
+        let app;
+        if(!header){
+            app =document.querySelector("#app")?.children[0]?.children[0]
+        } else {
+            app = header.parentElement;
+        }
+        if(!app) throw "Cannot get stateNode in this context!";
 
         // @ts-ignore
         // silence ts, i know what im doing

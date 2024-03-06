@@ -10,6 +10,12 @@ interface GoldQuestPrizeItem {
 
 type GoldQuestStage = "question" | "feedback" | "prize" | "";
 
+interface GoldQuestPlayer {
+    name: string;
+    blook: string;
+    gold: number;
+}
+
 interface GoldQuestStateNode extends BaseLiveGameStateNode {
     props: {
         client: {
@@ -42,14 +48,22 @@ interface GoldQuestStateNode extends BaseLiveGameStateNode {
         correct: boolean;
         gold: number; // gold and gold2 are always the same... maybe some really shitty anti-cheat check?
         gold2: number;
-        stage: GoldQuestStage
+        stage: GoldQuestStage;
+        players: GoldQuestPlayer[];
+        ready: boolean;
+        phaseTwo: boolean;
     }
     setState(newState: Record<any, any>): void; // this doesnt ACTUALLY return void, but we dont use the returned value for anything so idc
+    choosePrize(prize: number): void;
+    claimPrize(): void;
+    randomQ(): void;
+    selectPlayer(player: number): void;
 }
 
 export class GoldQuest extends BaseLiveGameMode {
     choices: GoldQuestPrizeItem[];
     stage: GoldQuestStage;
+    prizePhase: -1 | 0 | 1 | 2; // -1: not on prize screen, // 0: picking prize // 1: prize picked // 2: picking player to steal from
     attackerPopup: boolean;
     attacker: string;
     attacktype: "steal" | "swap" | "";
@@ -63,6 +77,7 @@ export class GoldQuest extends BaseLiveGameMode {
         this.attacker = "";
         this.attacktype = "";
         this.attackamount = 0;
+        this.prizePhase = -1;
         this.UI = new UIBuilder();
 
         this.UI.addCheckbox("autoans", "Auto Answer");
@@ -90,6 +105,11 @@ export class GoldQuest extends BaseLiveGameMode {
             this.attackamount = parseInt(stateNode.state.attackerMsg.slice(stateNode.state.attackerMsg.indexOf(" just took ")+11, stateNode.state.attackerMsg.indexOf(" gold from you!")));
             this.attacker = stateNode.state.attackerMsg.slice(0, stateNode.state.attackerMsg.indexOf(` just took ${this.attackamount} gold from you!`))
         }
+
+        this.prizePhase = -1;
+        if(this.stage === "prize" && stateNode.state.choice === -1) this.prizePhase = 0;
+        if(this.stage === "prize" && stateNode.state.choice > -1 && stateNode.state.ready && stateNode.state.phaseTwo === false) this.prizePhase = 1;
+        if(this.stage === "prize" && stateNode.state.phaseTwo === true) this.prizePhase = 2;
     }
     tick(){
         // update variables
@@ -126,13 +146,50 @@ export class GoldQuest extends BaseLiveGameMode {
         }
 
         let autoAnswer = this.UI.checkboxRef.get("autoans")?.checked;
+        let autoPrize = this.UI.checkboxRef.get("autoprize")?.checked;
+        let noBadPrizes = this.UI.checkboxRef.get("nobadprizes")?.checked;
         switch(this.stage){
             case "question":
-                let button = document.querySelector("#answer"+this.question?.answers.indexOf(this.question.correctAnswers[0]))?.children[0] as HTMLElement;
+                var button = document.querySelector("#answer"+this.question?.answers.indexOf(this.question.correctAnswers[0]))?.children[0] as HTMLElement;
                 if(autoAnswer) button.click();
             break;
             case "feedback":
+                var button = document.querySelector("#header + div > div") as HTMLElement;
+                if(autoAnswer) button.click();
+            break;
+            case "prize":
+                if(autoPrize){
+                    switch(this.prizePhase){
+                        case 0:
+                            let choice = Math.floor(Math.random() * 3);
 
+                            if(noBadPrizes){
+                                while(this.choices[choice].type === "divide"){
+                                    choice = Math.floor(Math.random() * 3);
+                                }
+                            }
+
+                            
+                            this.getStateNode().choosePrize(choice);
+                        break;
+                        case 1:
+                            this.getStateNode().claimPrize();
+                        break;
+                        case 2:
+                            if(
+                                (this.getStateNode().state.players.length === 0) ||
+                                (this.getStateNode().state.gold > this.getStateNode().state.players[0].gold 
+                                && this.getStateNode().state.choiceObj.type === "swap")
+                                ){
+                                this.getStateNode().randomQ();
+                                break;
+
+                            }
+                            this.getStateNode().selectPlayer(0);
+                            
+                        break;
+                    }
+                }
             break;
         }
     }

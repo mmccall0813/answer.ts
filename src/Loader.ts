@@ -1,7 +1,6 @@
 import { GameModeDetector } from "./Modes/DetectMode";
 import { Classic } from "./Modes/Live/Classic";
 import { GoldQuest } from "./Modes/Live/Gold";
-import { UIBuilder } from "./UI/UIBuilder";
 
 interface ModeController {
     tick(): void;
@@ -23,3 +22,7 @@ switch(mode.mode){
 
 let tickrate = 100;
 if(controller) setInterval( () => {controller?.tick()}, tickrate);
+
+// remove this when releasing
+// @ts-ignore
+window.Debug = controller;
