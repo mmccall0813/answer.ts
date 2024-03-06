@@ -7,7 +7,7 @@ interface ModeController {
     tick(): void;
 }
 
-// attept to detect the game the user is playing
+// attempt to detect the game the user is playing
 // if no game is detected, do nothing
 
 let mode = GameModeDetector();
