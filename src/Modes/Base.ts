@@ -68,6 +68,7 @@ export interface BaseLiveGameStateNode {
     state: {
         question: Question | undefined;
     }
+    setState(newState: Record<any, any>): void; // this doesnt ACTUALLY return void, but we dont use the returned value for anything so idc
 }
 
 export class BaseLiveGameMode extends BaseGameMode {

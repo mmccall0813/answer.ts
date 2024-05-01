@@ -1,6 +1,7 @@
 import { GameModeDetector } from "./Modes/DetectMode";
 import { Classic } from "./Modes/Live/Classic";
 import { GoldQuest } from "./Modes/Live/Gold";
+import { CryptoHack } from "./Modes/Live/Hack";
 
 interface ModeController {
     tick(): void;
@@ -17,6 +18,8 @@ switch(mode.mode){
         controller = new Classic();
     case "Gold":
         controller = new GoldQuest();
+    case "Hack":
+        controller = new CryptoHack();
 }
 
 

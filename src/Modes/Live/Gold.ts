@@ -57,7 +57,6 @@ interface GoldQuestStateNode extends BaseLiveGameStateNode {
         ready: boolean;
         phaseTwo: boolean;
     }
-    setState(newState: Record<any, any>): void; // this doesnt ACTUALLY return void, but we dont use the returned value for anything so idc
     choosePrize(prize: number): void;
     claimPrize(): void;
     randomQ(): void;
