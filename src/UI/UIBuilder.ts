@@ -18,8 +18,9 @@ export class UIBuilder {
         elem.style.top = y.toString()+"px";
         elem.style.backgroundColor = "#52297a";
         elem.style.padding = "5px";
-        elem.style.width = "300px";
-        elem.style.height = "200px";
+        elem.style.minWidth = "300px";
+        elem.style.maxWidth = "550px";
+        elem.style.minHeight = "200px";
         elem.style.paddingTop = "23px";
 
         let header = document.createElement("div");
@@ -77,7 +78,6 @@ export class UIBuilder {
         })
         window.addEventListener("mouseleave", (ev) => {
             dragging = false;
-            console.log("mouse is gone :(");
         })
 
 
@@ -85,20 +85,20 @@ export class UIBuilder {
         subtext.style.fontSize = "13px";
         subtext.style.color = "white";
         subtext.style.fontFamily = "Courier New";
-        subtext.innerText = "made with <3 by mmccall0813"
+        subtext.innerText = "made with <3 by mmccall0813";
 
         //elem.appendChild(subtext);
 
         document.body.appendChild(elem);
     }
-    addCheckbox(id: string, label: string, state?: boolean){
+    addCheckbox(id: string, label: string, state?: boolean, description?: string){
         if(this.checkboxRef.get(id) !== undefined){
             throw new Error("Tried to create a duplicate checkbox!");
         }
 
         let container = document.createElement("div");
-        container.style.height = "20px";
-        container.style.lineHeight = "20px";
+        description == undefined ? container.style.height = "20px" : container.style.height = "auto";
+        description == undefined ? container.style.lineHeight = "20px" : container.style.lineHeight = "auto";
         container.style.verticalAlign = "middle";
         container.style.backgroundColor = "rgba(0, 0, 0, 0.15)";
 
@@ -114,9 +114,22 @@ export class UIBuilder {
         checkbox.id = `answerts-checkbox-${id}`
         checkbox.type = "checkbox";
         checkbox.checked = state || false;
+        
+        let descriptionElement = document.createElement("label");
+        descriptionElement.htmlFor = `answerts-checkbox-${id}`;
+        descriptionElement.style.fontFamily = "Courier New";
+        descriptionElement.style.fontSize = "10px";
+        descriptionElement.style.color = "white";
+        descriptionElement.style.userSelect = "none";
+        descriptionElement.style.display = "block";
+        descriptionElement.style.marginLeft = "23px";
+        descriptionElement.style.paddingBottom = "2px";
+        if(description != undefined) descriptionElement.innerText = description;
+        
 
         container.appendChild(checkbox);
         container.appendChild(labelElement);
+        if(description != undefined) container.appendChild(descriptionElement);
 
         this.rootElement.appendChild(container);
 

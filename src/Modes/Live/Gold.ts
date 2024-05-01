@@ -1,6 +1,10 @@
 import { UIBuilder } from "../../UI/UIBuilder";
 import { BaseLiveGameMode, BaseLiveGameStateNode, Question } from "../Base";
 
+/*
+TODO: format this code better, some parts are hard to read.
+*/
+
 interface GoldQuestPrizeItem {
     blook: string
     type: string
@@ -34,7 +38,7 @@ interface GoldQuestStateNode extends BaseLiveGameStateNode {
             username: string;
         }
         liveGameController: {
-            getDatabaseVal(value: string): Promise<{ [key: string]: {b: string, g: number}}>;
+            getDatabaseVal(value: string): Promise<Record<string, {b: string, g: number}>>;
             setVal(options: any): Promise<void>; // this typing isnt all all accurate but I DONT CARE!!!!
         }
     }
@@ -46,7 +50,7 @@ interface GoldQuestStateNode extends BaseLiveGameStateNode {
         choices: GoldQuestPrizeItem[];
         question: Question;
         correct: boolean;
-        gold: number; // gold and gold2 are always the same... maybe some really shitty anti-cheat check?
+        gold: number; 
         gold2: number;
         stage: GoldQuestStage;
         players: GoldQuestPlayer[];
@@ -63,11 +67,12 @@ interface GoldQuestStateNode extends BaseLiveGameStateNode {
 export class GoldQuest extends BaseLiveGameMode {
     choices: GoldQuestPrizeItem[];
     stage: GoldQuestStage;
-    prizePhase: -1 | 0 | 1 | 2; // -1: not on prize screen, // 0: picking prize // 1: prize picked // 2: picking player to steal from
+    prizePhase: -1 | 0 | 1 | 2; // -1: not on prize screen, 0: picking prize, 1: prize picked, 2: picking player to steal from
     attackerPopup: boolean;
     attacker: string;
     attacktype: "steal" | "swap" | "";
     attackamount: number;
+    mrbeastcooldown: number;
     UI: UIBuilder;
     constructor(){
         super();
@@ -79,12 +84,14 @@ export class GoldQuest extends BaseLiveGameMode {
         this.attackamount = 0;
         this.prizePhase = -1;
         this.UI = new UIBuilder();
+        this.mrbeastcooldown = 0;
 
-        this.UI.addCheckbox("autoans", "Auto Answer");
-        this.UI.addCheckbox("autoprize", "Auto Claim Prizes");
-        this.UI.addCheckbox("nobadprizes", "Never Auto Claim Bad Prizes");
-        this.UI.addCheckbox("revengesteal", "Revenge Steal");
-        this.UI.addCheckbox("revengeswap", "Revenge Swap");
+        this.UI.addCheckbox("autoans", "Auto Answer", false, "Automatically answers the question on screen.");
+        this.UI.addCheckbox("autoprize", "Auto Claim Prizes", false, "Automatically claim question rewards.");
+        this.UI.addCheckbox("nobadprizes", "Never Auto Claim Bad Prizes", false, "Prevents auto claim prizes from making you lose gold.");
+        this.UI.addCheckbox("revengesteal", "Revenge Steal", false, "Will steal all of the gold from anyone who steals from you.");
+        this.UI.addCheckbox("revengeswap", "Revenge Swap", false, "Will steal all the gold from anyone who swaps with you");
+        this.UI.addCheckbox("mrbeast", "Mr Beast", false, "Gives the poorest player in the lobby a million gold.");
     }
     getStateNode(): GoldQuestStateNode {
         return super.getStateNode() as GoldQuestStateNode;
@@ -119,16 +126,8 @@ export class GoldQuest extends BaseLiveGameMode {
         if(this.attackerPopup){
             let closeButton = document.querySelector("#modalOk") as HTMLElement;
             closeButton.click();
-            let performRevenge = false;
 
-            if(this.attacktype === "swap" && this.UI.checkboxRef.get("revengeswap")?.checked === true){
-                performRevenge = true;
-            }
-            if(this.attacktype === "steal" && this.UI.checkboxRef.get("revengesteal")?.checked === true){
-                performRevenge = true;
-            }
-
-            if(performRevenge){
+            if( (this.attacktype === "swap" || this.attacktype === "steal") && this.UI.checkboxRef.get("revengeswap")?.checked){
                 // how dare they use a game mechanic as its intended!
                 // steal all their doubloons and leave none left!
                 this.getStateNode().props.liveGameController.getDatabaseVal("c").then( (data) => {
@@ -142,6 +141,36 @@ export class GoldQuest extends BaseLiveGameMode {
                     });
                     this.getStateNode().setState({gold: this.getStateNode().state.gold+data[this.attacker].g, gold2: this.getStateNode().state.gold2+data[this.attacker].g});
                 })
+            }
+
+        }
+
+        if(this.UI.checkboxRef.get("mrbeast")?.checked){
+            if(this.mrbeastcooldown === 0){
+                this.getStateNode().props.liveGameController.getDatabaseVal("c").then( (data) => {
+                    let players = data;
+                    let poorestName: string = "";
+                    let poorest: {b: string, g: number} | null;
+                    
+                    Object.keys(players).forEach( (name) => {
+                        if(poorest == null || players[name].g < poorest.g){
+                            poorestName = name;
+                            poorest = players[name];
+                        }
+                    })
+
+                    this.getStateNode().props.liveGameController.setVal({
+                        path: `c/${this.getStateNode().props.client.name}`,
+                        val: {
+                            b: this.getStateNode().props.client.blook,
+                            g: this.getStateNode().state.gold,
+                            tat: `${poorestName}:-1000000`
+                        }
+                    });
+                })
+                this.mrbeastcooldown = 100;
+            } else {
+                this.mrbeastcooldown -= 1;
             }
         }
 
@@ -177,13 +206,12 @@ export class GoldQuest extends BaseLiveGameMode {
                         break;
                         case 2:
                             if(
-                                (this.getStateNode().state.players.length === 0) ||
-                                (this.getStateNode().state.gold > this.getStateNode().state.players[0].gold 
+                                (this.getStateNode().state.players.length === 0)
+                                || (this.getStateNode().state.gold > this.getStateNode().state.players[0].gold 
                                 && this.getStateNode().state.choiceObj.type === "swap")
-                                ){
+                            ){
                                 this.getStateNode().randomQ();
                                 break;
-
                             }
                             this.getStateNode().selectPlayer(0);
                             
