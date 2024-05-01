@@ -77,6 +77,7 @@ export class CryptoHack extends BaseLiveGameMode {
                     case 1:
                         this.getStateNode().claimPrize();
                     break;
+                }
             break;
         }
     }
