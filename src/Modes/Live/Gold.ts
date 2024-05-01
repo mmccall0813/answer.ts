@@ -86,7 +86,7 @@ export class GoldQuest extends BaseLiveGameMode {
         this.UI = new UIBuilder();
         this.mrbeastcooldown = 0;
 
-        this.UI.addCheckbox("autoans", "Auto Answer", false, "Automatically answers the question on screen.");
+        this.UI.addCheckbox("autoans", "Auto Answer", false, "Automatically answers questions.");
         this.UI.addCheckbox("autoprize", "Auto Claim Prizes", false, "Automatically claim question rewards.");
         this.UI.addCheckbox("nobadprizes", "Never Auto Claim Bad Prizes", false, "Prevents auto claim prizes from making you lose gold.");
         this.UI.addCheckbox("revengesteal", "Revenge Steal", false, "Will steal all of the gold from anyone who steals from you.");

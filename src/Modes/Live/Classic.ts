@@ -14,7 +14,7 @@ export class Classic extends BaseLiveGameMode {
         this.readyToAnswer = false;
 
         this.UI = new UIBuilder();
-        this.UI.addCheckbox("autoans", "Auto Answer", true);
+        this.UI.addCheckbox("autoans", "Auto Answer", false, "Automatically answers questions.");
     }
     updateBasicInfo(): void {
         super.updateBasicInfo();
