@@ -16,11 +16,13 @@ interface CryptoHackStateNode extends BaseLiveGameStateNode {
         stage: CryptoHackStage;
         correctPassword: string;
         hackPasswords: string[];
+        passwordGuessed: string;
         ready: boolean;
         hack: string;
     }
     choosePrize(choice: number): void;
     claimPrize(): void;
+    guessPassword(choice: string): void;
 }
 
 
@@ -60,6 +62,7 @@ export class CryptoHack extends BaseLiveGameMode {
 
         let autoAnswer = this.UI.checkboxRef.get("autoans")?.checked;
         let autoPrize = this.UI.checkboxRef.get("autoprize")?.checked;
+        let autoHack = this.UI.checkboxRef.get("autohack")?.checked;
         switch(this.stage){
             case "question":
                 var button = document.querySelector("#answer"+this.question?.answers.indexOf(this.question.correctAnswers[0]))?.children[0] as HTMLElement;
@@ -70,13 +73,20 @@ export class CryptoHack extends BaseLiveGameMode {
                 if(autoAnswer) button.click();
             break;
             case "prize":
-                switch(this.prizePhase){
-                    case 0:
-                        this.getStateNode().choosePrize(0); // theres only 1 prize, illusion of choice. not the case for gold quest for some reason...
-                    break;
-                    case 1:
-                        this.getStateNode().claimPrize();
-                    break;
+                if(autoPrize){
+                    switch(this.prizePhase){
+                        case 0:
+                            this.getStateNode().choosePrize(0); // theres only 1 prize, illusion of choice. not the case for gold quest for some reason...
+                        break;
+                        case 1:
+                            this.getStateNode().claimPrize();
+                        break;
+                    }
+                }
+            break;
+            case "hack":
+                if(this.getStateNode().state.passwordGuessed === "" && autoHack){
+                    this.getStateNode().guessPassword(this.getStateNode().state.correctPassword);
                 }
             break;
         }
