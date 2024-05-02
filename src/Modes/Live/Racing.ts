@@ -1,16 +1,26 @@
 import { UIBuilder } from "../../UI/UIBuilder";
 import { BaseLiveGameMode, BaseLiveGameStateNode, Question } from "../Base";
 
-type RacingPhase = "question" | "feedback" | "powerup" | "";
+type RacingPhase = "question" | "feedback" | "powerup" | "target" | "";
+
+type RacingPlayer = {
+    name: string,
+    blook: string,
+    progress: number
+}
 
 interface RacingStateNode extends BaseLiveGameStateNode {
     state: {
         question: Question | undefined,
         phase: RacingPhase,
-        isChosen: boolean
+        isChosen: boolean,
+        players: RacingPlayer[]
     }
     onAnswer(correct: boolean, answer: string): void,
-    answerNext(): void
+    answerNext(): void,
+    choosePowerUp(): void,
+    usePowerUp(): void,
+    targetPlayer(player: RacingPlayer): void;
 }
 
 export class Racing extends BaseLiveGameMode {
@@ -41,7 +51,14 @@ export class Racing extends BaseLiveGameMode {
             }
         }
         if(this.UI.checkboxRef.get("autopowerup")?.checked){
-            // TODO
+            switch(stateNode.state.phase){
+                case "powerup":
+                    stateNode.state.isChosen ? stateNode.usePowerUp() : stateNode.choosePowerUp();
+                break;
+                case "target":
+                    stateNode.targetPlayer(stateNode.state.players.sort( (a, b) => b.progress - a.progress)[0]);
+                break;
+            }
         }
     }
 }

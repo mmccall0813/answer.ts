@@ -15,5 +15,5 @@ Development progress:
 - [x] Battle Royale
 - [ ] Cafe
 - [ ] Factory
-- [ ] Racing
+- [x] Racing
 - [ ] Blook Rush

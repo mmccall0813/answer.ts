@@ -3,6 +3,7 @@ import { Classic } from "./Modes/Live/Classic";
 import { FishingFrenzy } from "./Modes/Live/Fish";
 import { GoldQuest } from "./Modes/Live/Gold";
 import { CryptoHack } from "./Modes/Live/Hack";
+import { Racing } from "./Modes/Live/Racing";
 import { BattleRoyale } from "./Modes/Live/Royale";
 
 interface ModeController {
@@ -26,6 +27,8 @@ switch(mode.mode){
         controller = new FishingFrenzy();
     case "Royale":
         controller = new BattleRoyale();
+    case "Racing":
+        controller = new Racing();
 }
 
 
