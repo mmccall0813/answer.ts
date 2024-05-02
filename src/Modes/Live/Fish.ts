@@ -22,11 +22,13 @@ interface FishingFrenzyStateNode extends BaseLiveGameStateNode {
 export class FishingFrenzy extends BaseLiveGameMode {
     stage: FishingFrenzyStage;
     UI: UIBuilder;
+    isCastFunctionPatched: boolean;
     constructor(){
         super();
 
         this.stage = "";
         this.UI = new UIBuilder();
+        this.isCastFunctionPatched = false;
 
         this.UI.addCheckbox("autoans", "Auto Answer", false, "Automatically answers questions.");
         this.UI.addCheckbox("autocast", "Auto Cast", false, "Automatically casts your fishing rod.");
@@ -35,11 +37,7 @@ export class FishingFrenzy extends BaseLiveGameMode {
         this.UI.addCheckbox("fastcast", "Instant Cast", false, "Removes the delay between casting and hooking a fish.");
         this.UI.addCheckbox("fastlure", "Lure Upgrade", false, "Guarantees a lure upgrade on your next cast.");
 
-        let oldCastFunction = this.getStateNode().onCast;
-
-        this.getStateNode().onCast = () => {
-            this.getCheckboxState("fastcast") ? this.getStateNode().setState({isHooked: true}) : oldCastFunction();
-        }
+        
     }
     updateBasicInfo(): void {
         super.updateBasicInfo();
@@ -58,6 +56,16 @@ export class FishingFrenzy extends BaseLiveGameMode {
         if(this.getCheckboxState("fastlure")) stateNode.lureCounter = 99;
         if(this.getCheckboxState("autocast") && stateNode.state.castReady) stateNode.onCast();
         if(this.getCheckboxState("autoreel") && stateNode.state.isHooked) stateNode.onHook();
+
+        if(!this.isCastFunctionPatched && stateNode.onCast != null){
+            let oldCastFunction = this.getStateNode().onCast;
+
+            this.getStateNode().onCast = () => {
+                this.getCheckboxState("fastcast") ? this.getStateNode().setState({isHooked: true}) : oldCastFunction();
+            }
+            
+            this.isCastFunctionPatched = true;
+        }
 
         switch(this.stage){
             case "question":
