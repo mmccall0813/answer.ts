@@ -102,8 +102,9 @@ export class UIBuilder {
         container.style.verticalAlign = "middle";
         container.style.backgroundColor = "rgba(0, 0, 0, 0.15)";
 
+        let elemID = Math.floor(Math.random() * 20000000).toString(); // will hopefully make detection harder???
         let labelElement = document.createElement("label");
-        labelElement.htmlFor = `answerts-checkbox-${id}`;
+        labelElement.htmlFor = elemID;
         labelElement.style.fontFamily = "Courier New";
         labelElement.style.fontSize = "15px";
         labelElement.style.color = "white";
@@ -111,12 +112,12 @@ export class UIBuilder {
         labelElement.innerText = label;
 
         let checkbox = document.createElement("input");
-        checkbox.id = `answerts-checkbox-${id}`
+        checkbox.id = elemID
         checkbox.type = "checkbox";
         checkbox.checked = state || false;
         
         let descriptionElement = document.createElement("label");
-        descriptionElement.htmlFor = `answerts-checkbox-${id}`;
+        descriptionElement.htmlFor = elemID;
         descriptionElement.style.fontFamily = "Courier New";
         descriptionElement.style.fontSize = "10px";
         descriptionElement.style.color = "white";

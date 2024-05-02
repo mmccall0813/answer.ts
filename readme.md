@@ -12,7 +12,7 @@ Development progress:
 - [ ] Tower Defense
 - [ ] Tower Defense 2
 - [ ] Monster Brawl
-- [ ] Battle Royale
+- [x] Battle Royale
 - [ ] Cafe
 - [ ] Factory
 - [ ] Racing

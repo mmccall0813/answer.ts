@@ -3,6 +3,7 @@ import { Classic } from "./Modes/Live/Classic";
 import { FishingFrenzy } from "./Modes/Live/Fish";
 import { GoldQuest } from "./Modes/Live/Gold";
 import { CryptoHack } from "./Modes/Live/Hack";
+import { BattleRoyale } from "./Modes/Live/Royale";
 
 interface ModeController {
     tick(): void;
@@ -23,6 +24,8 @@ switch(mode.mode){
         controller = new CryptoHack();
     case "Fish":
         controller = new FishingFrenzy();
+    case "Royale":
+        controller = new BattleRoyale();
 }
 
 
