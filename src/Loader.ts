@@ -1,5 +1,6 @@
 import { GameModeDetector } from "./Modes/DetectMode";
 import { Classic } from "./Modes/Live/Classic";
+import { FishingFrenzy } from "./Modes/Live/Fish";
 import { GoldQuest } from "./Modes/Live/Gold";
 import { CryptoHack } from "./Modes/Live/Hack";
 
@@ -20,6 +21,8 @@ switch(mode.mode){
         controller = new GoldQuest();
     case "Hack":
         controller = new CryptoHack();
+    case "Fish":
+        controller = new FishingFrenzy();
 }
 
 

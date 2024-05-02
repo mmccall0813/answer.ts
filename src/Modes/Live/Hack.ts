@@ -3,10 +3,6 @@ import { BaseLiveGameMode, BaseLiveGameStateNode, Question } from "../Base";
 
 type CryptoHackStage = "question" | "feedback" | "prize" | "hack" | "";
 
-type CryptoHackPrize = {
-    type: "crypto" | "hack";
-}
-
 interface CryptoHackStateNode extends BaseLiveGameStateNode {
     state: {
         question: Question,
@@ -24,7 +20,6 @@ interface CryptoHackStateNode extends BaseLiveGameStateNode {
     claimPrize(): void;
     guessPassword(choice: string): void;
 }
-
 
 export class CryptoHack extends BaseLiveGameMode {
     stage: CryptoHackStage;
