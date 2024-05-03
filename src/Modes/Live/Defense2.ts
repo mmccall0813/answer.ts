@@ -9,7 +9,8 @@ interface TowerDefense2StateNode extends BaseLiveGameStateNode {
         question: Question,
         previewTower: string,
         selectedTower: null, // TODO: make a tower type
-        mShopOpen: boolean
+        mShopOpen: boolean,
+        stage: TowerDefense2Stage
     }
 }
 
@@ -30,9 +31,8 @@ export class TowerDefense2 extends BaseLiveGameMode {
 
         Object.defineProperty(Object.prototype, "hello please give me your shoplist (this is a robbery)", {
             get: function(){
-                debugger;
                 if(originalItems == null) originalItems = structuredClone(this);
-                debugger;
+                
                 if(!restore){
                     Object.keys(this).forEach( (key) => { 
                         this[key].baseStats.price = 0; 
@@ -48,7 +48,7 @@ export class TowerDefense2 extends BaseLiveGameMode {
         })
 
         this.UI.checkboxRef.get("freeitems")?.addEventListener("change", (e) => {
-            let checked = this.UI.checkboxRef.get("freeitems");
+            let checked = this.UI.checkboxRef.get("freeitems")?.checked;
             restore = !checked;
 
             // toggle free items
