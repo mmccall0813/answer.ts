@@ -2,7 +2,7 @@ export class UIBuilder {
     rootElement: HTMLElement;
     checkboxRef: Map<string, HTMLInputElement>;
     sliderRef: Map<string, HTMLInputElement>;
-    buttonRef: Map<string, HTMLDivElement>;
+    buttonRef: Map<string, HTMLButtonElement>;
     constructor(){
         this.checkboxRef = new Map();
         this.sliderRef = new Map();
@@ -136,5 +136,36 @@ export class UIBuilder {
 
         this.checkboxRef.set(id, checkbox);
         return checkbox;
+    }
+    addButton(id: string, label: string){
+        if(this.buttonRef.get(id) !== undefined) throw new Error("Tried to create a duplicate button!");
+
+        let container = document.createElement("div");
+
+        let button = document.createElement("button");
+
+        button.innerText = label;
+        button.style.lineHeight = "14px";
+        button.style.border = "4px solid rgba(0,0,0,0.2)";
+        button.style.color = "white";
+        button.style.fontFamily = "Courier New";
+        button.style.fontSize = "12px";
+        button.style.backgroundColor = "rgba(0,0,0,0.15)";
+        button.style.marginTop = "2px";
+        button.style.marginBottom = "2px";
+
+        button.addEventListener("mousedown", () => {
+            button.style.backgroundColor = 'rgba(0,0,0,0.4)';
+        })
+        button.addEventListener("mouseup", () => {
+            button.style.backgroundColor = 'rgba(0,0,0,0.15)';
+        })
+
+        container.appendChild(button);
+
+        this.rootElement.appendChild(container);
+
+        this.buttonRef.set(id, button);
+        return button;
     }
 }
