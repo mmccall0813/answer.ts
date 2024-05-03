@@ -1,5 +1,6 @@
 import { GameModeDetector } from "./Modes/DetectMode";
 import { Classic } from "./Modes/Live/Classic";
+import { TowerDefense2 } from "./Modes/Live/Defense2";
 import { FishingFrenzy } from "./Modes/Live/Fish";
 import { GoldQuest } from "./Modes/Live/Gold";
 import { CryptoHack } from "./Modes/Live/Hack";
@@ -29,6 +30,8 @@ switch(mode.mode){
         controller = new BattleRoyale();
     case "Racing":
         controller = new Racing();
+    case "Defense2":
+        controller = new TowerDefense2();
 }
 
 
