@@ -12,7 +12,8 @@ interface TowerDefense2StateNode extends BaseLiveGameStateNode {
         selectedTower: null, // TODO: make a tower type
         mShopOpen: boolean,
         stage: TowerDefense2Stage,
-        totalDmg: number
+        totalDmg: number,
+        towers: TowerDefense2Tower[]
     },
     game: {
         current: Game   
@@ -26,8 +27,15 @@ interface EnemyGameObject extends GameObjects.GameObject {
     dmg: number,
     speed: number,
     receiveDamage(s: number, t: number): void,
-    setHP(newHP: number): void
-} 
+    setHP(newHP: number): void,
+    slow(rate: number, time: number): void
+}
+
+interface TowerDefense2Tower extends GameObjects.Image {
+    type: string,
+    level: number,
+    upgrade(level: number): void
+}
 
 export class TowerDefense2 extends BaseLiveGameMode {
     UI: UIBuilder;
@@ -52,9 +60,9 @@ export class TowerDefense2 extends BaseLiveGameMode {
         let makeChanges = true;
 
         // prevents duplicate instances of answer.ts from breaking eachother
-        let shoplistGrabberName = crypto.randomUUID();
+        let towerMapGrabberName = crypto.randomUUID();
 
-        Object.defineProperty(Object.prototype, shoplistGrabberName, {
+        Object.defineProperty(Object.prototype, towerMapGrabberName, {
             get: function(){
                 if(!makeChanges) return Object.values(this)[0];
                 if(originalItems == null) originalItems = structuredClone(this);
@@ -72,11 +80,15 @@ export class TowerDefense2 extends BaseLiveGameMode {
                             if(fastTowers.enabled && u.fireRate) u.fireRate /= 10;
                         })
                     });
+
+                    stateNode.state.towers.forEach( (t) => {
+                        t.upgrade(t.level); // makes stats match the updated tower map
+                    })
                 }
                 
                 makeChanges = false;
-                stateNode.game.current.events.emit("deselect-tower");
-                return Object.values(this)[0] // prevents a crash i think
+                stateNode.game.current.events.emit("stop-preview");
+                return Object.values(this)[0] // prevents the game from erroring out and crashing
             }
         })
 
@@ -90,8 +102,8 @@ export class TowerDefense2 extends BaseLiveGameMode {
                when the game calls that getter function, we gain access to the
                internal tower stats, and we can make changes to it from there
             */
-            stateNode.game.current.events.emit("preview-tower", shoplistGrabberName);
-            stateNode.setState({}); // force a re-render
+            stateNode.game.current.events.emit("deselect-tower");
+            stateNode.setState({previewTower: towerMapGrabberName});
         })
 
         this.UI.checkboxRef.get("fasttowers")?.addEventListener("change", (e) => {
@@ -99,14 +111,13 @@ export class TowerDefense2 extends BaseLiveGameMode {
             fastTowers.enabled = checked;
             makeChanges = true;
 
-            stateNode.game.current.events.emit("preview-tower", shoplistGrabberName);
-            stateNode.setState({});
+            stateNode.game.current.events.emit("deselect-tower");
+            stateNode.setState({previewTower: towerMapGrabberName});
         })
 
         this.UI.buttonRef.get("killall")?.addEventListener("click", () => {
             stateNode.game.current.scene.scenes[0].physics.world.bodies.entries.filter( (e) => e.gameObject.active).forEach( (enemyBody) => {
                 let enemy = enemyBody.gameObject as EnemyGameObject;
-                stateNode.setState({totalDmg: stateNode.state.totalDmg+enemy.hp});
                 enemy.receiveDamage(enemy.hp, 1);
             });
         })
@@ -135,6 +146,13 @@ export class TowerDefense2 extends BaseLiveGameMode {
             case "feedback":
                 stateNode.answerNext();
             break;
+        }
+
+        if(this.getCheckboxState("slowenemies")){
+            stateNode.game.current.scene.scenes[0].physics.world.bodies.entries.filter( (e) => e.gameObject.active).forEach( (enemyBody) => {
+                let enemy = enemyBody.gameObject as EnemyGameObject;
+                enemy?.slow(0.9, 150);
+            })
         }
     }
 }

@@ -2,6 +2,10 @@
 
 Coming soon™
 
+If you want to try it out, clone the repo, build using webpack, and run the contents of `./dist/answer.ts.min.js` in your browser console while a supported Blooket live mode is running.
+
+Pre-built versions are not available at this time.
+
 Development progress:
 
 - [ ] Pirate's Voyage (not planned, im not paying for plus)
@@ -10,7 +14,7 @@ Development progress:
 - [x] Classic
 - [x] Fishing Frenzy
 - [ ] Tower Defense
-- [ ] Tower Defense 2
+- [x] Tower Defense 2
 - [ ] Monster Brawl
 - [x] Battle Royale
 - [ ] Cafe
