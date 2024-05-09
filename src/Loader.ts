@@ -20,18 +20,25 @@ let controller: ModeController | null = null;
 switch(mode.mode){
     case "Classic":
         controller = new Classic();
+        break;
     case "Gold":
         controller = new GoldQuest();
+        break;
     case "Hack":
         controller = new CryptoHack();
+        break;
     case "Fish":
         controller = new FishingFrenzy();
+        break;
     case "Royale":
         controller = new BattleRoyale();
+        break;
     case "Racing":
         controller = new Racing();
+        break;
     case "Defense2":
         controller = new TowerDefense2();
+        break;
 }
 
 
