@@ -204,15 +204,16 @@ export class GoldQuest extends BaseLiveGameMode {
                             this.getStateNode().claimPrize();
                         break;
                         case 2:
+                            let sortedPlayers = this.getStateNode().state.players.sort( (a,b) => {return b.gold-a.gold;});
                             if(
                                 (this.getStateNode().state.players.length === 0)
-                                || (this.getStateNode().state.gold > this.getStateNode().state.players[0].gold 
+                                || (this.getStateNode().state.gold > sortedPlayers[0].gold 
                                 && this.getStateNode().state.choiceObj.type === "swap")
                             ){
                                 this.getStateNode().randomQ();
                                 break;
                             }
-                            this.getStateNode().selectPlayer(0);
+                            this.getStateNode().selectPlayer(this.getStateNode().state.players.indexOf(sortedPlayers[0]));
                             
                         break;
                     }
