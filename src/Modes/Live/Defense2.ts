@@ -54,7 +54,6 @@ export class TowerDefense2 extends BaseLiveGameMode {
         this.stage = "";
 
         let originalItems: any = null;
-        let stateNode = this.getStateNode();
         let freeItems = {enabled: false};
         let fastTowers = {enabled: false};
         let makeChanges = true;
@@ -81,13 +80,13 @@ export class TowerDefense2 extends BaseLiveGameMode {
                         })
                     });
 
-                    stateNode.state.towers.forEach( (t) => {
+                    this.getStateNode().state.towers.forEach( (t: TowerDefense2Tower) => {
                         t.upgrade(t.level); // makes stats match the updated tower map
                     })
                 }
                 
                 makeChanges = false;
-                stateNode.game.current.events.emit("stop-preview");
+                this.getStateNode().game.current.events.emit("stop-preview");
                 return Object.values(this)[0] // prevents the game from erroring out and crashing
             }
         })
@@ -102,8 +101,8 @@ export class TowerDefense2 extends BaseLiveGameMode {
                when the game calls that getter function, we gain access to the
                internal tower stats, and we can make changes to it from there
             */
-            stateNode.game.current.events.emit("deselect-tower");
-            stateNode.setState({previewTower: towerMapGrabberName});
+            this.getStateNode().game.current.events.emit("deselect-tower");
+            this.getStateNode().setState({previewTower: towerMapGrabberName});
         })
 
         this.UI.checkboxRef.get("fasttowers")?.addEventListener("change", (e) => {
@@ -111,12 +110,12 @@ export class TowerDefense2 extends BaseLiveGameMode {
             fastTowers.enabled = checked;
             makeChanges = true;
 
-            stateNode.game.current.events.emit("deselect-tower");
-            stateNode.setState({previewTower: towerMapGrabberName});
+            this.getStateNode().game.current.events.emit("deselect-tower");
+            this.getStateNode().setState({previewTower: towerMapGrabberName});
         })
 
         this.UI.buttonRef.get("killall")?.addEventListener("click", () => {
-            stateNode.game.current.scene.scenes[0].physics.world.bodies.entries.filter( (e) => e.gameObject.active).forEach( (enemyBody) => {
+            this.getStateNode().game.current.scene.scenes[0].physics.world.bodies.entries.filter( (e) => e.gameObject.active).forEach( (enemyBody) => {
                 let enemy = enemyBody.gameObject as EnemyGameObject;
                 enemy.receiveDamage(enemy.hp, 1);
             });
