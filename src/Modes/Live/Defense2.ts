@@ -60,6 +60,7 @@ export class TowerDefense2 extends BaseLiveGameMode {
 
         // prevents duplicate instances of answer.ts from breaking eachother
         let towerMapGrabberName = crypto.randomUUID();
+        let self = this;
 
         Object.defineProperty(Object.prototype, towerMapGrabberName, {
             get: function(){
@@ -80,13 +81,13 @@ export class TowerDefense2 extends BaseLiveGameMode {
                         })
                     });
 
-                    this.getStateNode().state.towers.forEach( (t: TowerDefense2Tower) => {
+                    self.getStateNode().state.towers.forEach( (t: TowerDefense2Tower) => {
                         t.upgrade(t.level); // makes stats match the updated tower map
                     })
                 }
                 
                 makeChanges = false;
-                this.getStateNode().game.current.events.emit("stop-preview");
+                self.getStateNode().game.current.events.emit("stop-preview");
                 return Object.values(this)[0] // prevents the game from erroring out and crashing
             }
         })
